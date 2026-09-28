@@ -130,24 +130,26 @@ Placeholders visibles pour : CV (`public/cv.pdf`), photo (optionnelle), stage, p
 
 Idée directrice : **un dossier d'exploitation bien tenu**. Le site ressemble à la documentation d'une infrastructure propre (schémas, tableaux lisibles, états clairs), pas à un site de développeur ni à une landing page.
 
-Tokens :
+Tokens (mode clair) :
 
 | Rôle | Valeur |
 |---|---|
-| Fond | `#F6F7F9` |
+| Fond | `#F4F5F3` |
 | Surface (tableaux, schéma) | `#FFFFFF` |
-| Texte / encre | `#1A2433` |
-| Texte secondaire | `#566273` |
-| Traits et bordures | `#D3D9E1` |
-| Accent (liens, focus) | `#1F5FA8` |
+| Texte / encre | `#1C2327` |
+| Texte secondaire | `#56626A` |
+| Traits et bordures | `#D4D9D6` |
+| Accent (liens, focus) | `#16706C` |
 | État "terminé" | `#2F7A55` |
-| État "en cours" | `#A36A12` |
+| État "en cours" | `#8F5C0F` |
 
-Mode sombre via `prefers-color-scheme` avec des équivalents sobres (fond `#131A24`, texte `#E4E8EE`, accent `#7FB0E8`).
+Mode sombre (fond `#151B1F`, surface `#1C2429`, texte `#E3E8E6`, texte secondaire `#9AA7A6`, traits `#2E3A40`, accent `#5BBFB8`, état "terminé" `#4FAE7C`, état "en cours" `#D08A2E`). Le site suit `prefers-color-scheme` par défaut ; un bouton dans le header permet de forcer un thème, mémorisé côté client (`data-theme` sur `<html>` + `localStorage`).
 
-Typographie : **IBM Plex Sans** pour tout le texte, **IBM Plex Mono** réservée au contenu réellement technique (commandes, adresses IP, noms de services, blocs de code). Échelle typographique modérée, lignes ≤ 75 caractères, texte aligné à gauche.
+Typographie : **Red Hat Display** pour les titres (`h1`–`h4`), **Red Hat Text** pour le reste du texte, **Red Hat Mono** réservée au contenu réellement technique (commandes, adresses IP, noms de services, blocs de code). Échelle typographique modérée, lignes ≤ 75 caractères, texte aligné à gauche.
 
 L'élément marquant (un seul) : sur l'accueil, un **schéma SVG du lab** dessiné à la main dans le code (hyperviseur → VM Windows Server AD, VM Ubuntu Apache, VPN "en cours"), sobre, avec des traits fins. Chaque nœud du schéma est un lien vers la fiche correspondante. Tout le reste reste calme.
+
+Détail de caractère (un seul, en plus du schéma) : l'état d'une réalisation (terminé / en cours) s'affiche avec un petit voyant rond plein (façon LED de port réseau) à côté du texte, sans animation.
 
 À éviter : esthétique "hacker" (fond noir, vert terminal, effet Matrix), gradients, cartes identiques avec ombres, animations d'apparition, labels en majuscules espacées au-dessus des titres, numérotation décorative 01/02/03, flèches "→" dans les boutons, texte marketing.
 

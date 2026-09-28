@@ -38,6 +38,7 @@ const realisations = (await getCollection('realisations', ({ data }) => !data.dr
                 <span class="item-row__title">{r.data.title}</span>
                 <span class="item-row__meta">
                   <span class={`badge badge--${r.data.statut}`}>
+                    <span class="status-dot" aria-hidden="true"></span>
                     {r.data.statut === 'termine' ? 'Terminé' : 'En cours'}
                   </span>
                   · {typeLabels[r.data.type]} · {r.data.periode}

@@ -1,15 +1,16 @@
 :root {
-  --color-bg: #f6f7f9;
+  --color-bg: #f4f5f3;
   --color-surface: #ffffff;
-  --color-ink: #1a2433;
-  --color-ink-secondary: #566273;
-  --color-border: #d3d9e1;
-  --color-accent: #1f5fa8;
+  --color-ink: #1c2327;
+  --color-ink-secondary: #56626a;
+  --color-border: #d4d9d6;
+  --color-accent: #16706c;
   --color-status-done: #2f7a55;
-  --color-status-progress: #a36a12;
+  --color-status-progress: #8f5c0f;
 
-  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-heading: 'Red Hat Display', system-ui, sans-serif;
+  --font-body: 'Red Hat Text', system-ui, sans-serif;
+  --font-mono: 'Red Hat Mono', ui-monospace, monospace;
 
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -31,33 +32,33 @@
   --radius: 6px;
   --border-width: 1px;
 
-  --focus-ring: 0 0 0 3px rgba(31, 95, 168, 0.35);
+  --focus-ring: 0 0 0 3px rgba(22, 112, 108, 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-bg: #131a24;
-    --color-surface: #1b2430;
-    --color-ink: #e4e8ee;
-    --color-ink-secondary: #9aa7b8;
-    --color-border: #2a3644;
-    --color-accent: #7fb0e8;
+    --color-bg: #151b1f;
+    --color-surface: #1c2429;
+    --color-ink: #e3e8e6;
+    --color-ink-secondary: #9aa7a6;
+    --color-border: #2e3a40;
+    --color-accent: #5bbfb8;
     --color-status-done: #4fae7c;
     --color-status-progress: #d08a2e;
 
-    --focus-ring: 0 0 0 3px rgba(127, 176, 232, 0.4);
+    --focus-ring: 0 0 0 3px rgba(91, 191, 184, 0.4);
   }
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #131a24;
-  --color-surface: #1b2430;
-  --color-ink: #e4e8ee;
-  --color-ink-secondary: #9aa7b8;
-  --color-border: #2a3644;
-  --color-accent: #7fb0e8;
+  --color-bg: #151b1f;
+  --color-surface: #1c2429;
+  --color-ink: #e3e8e6;
+  --color-ink-secondary: #9aa7a6;
+  --color-border: #2e3a40;
+  --color-accent: #5bbfb8;
   --color-status-done: #4fae7c;
   --color-status-progress: #d08a2e;
 
-  --focus-ring: 0 0 0 3px rgba(127, 176, 232, 0.4);
+  --focus-ring: 0 0 0 3px rgba(91, 191, 184, 0.4);
 }

@@ -317,7 +317,7 @@ main {
 
 .lab-schema text {
   fill: var(--color-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
 }
 
 .lab-schema .schema-secondary-text {

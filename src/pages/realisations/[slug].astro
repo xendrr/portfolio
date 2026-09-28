@@ -30,7 +30,12 @@ const typeLabels: Record<string, string> = {
     <dl class="field-list">
       <div>
         <dt>Statut</dt>
-        <dd><span class={`badge badge--${data.statut}`}>{data.statut === 'termine' ? 'Terminé' : 'En cours'}</span></dd>
+        <dd>
+          <span class={`badge badge--${data.statut}`}>
+            <span class="status-dot" aria-hidden="true"></span>
+            {data.statut === 'termine' ? 'Terminé' : 'En cours'}
+          </span>
+        </dd>
       </div>
       <div>
         <dt>Type</dt>

@@ -23,7 +23,7 @@ body {
   margin: 0;
   background-color: var(--color-bg);
   color: var(--color-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   text-align: left;
@@ -33,6 +33,7 @@ h1,
 h2,
 h3,
 h4 {
+  font-family: var(--font-heading);
   line-height: 1.25;
   font-weight: 600;
 }
