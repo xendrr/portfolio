@@ -1,0 +1,55 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const realisations = await getCollection('realisations', ({ data }) => !data.draft);
+  return realisations.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const typeLabels: Record<string, string> = {
+  tp: 'TP',
+  projet: 'Projet',
+  stage: 'Stage',
+  perso: 'Personnel',
+};
+---
+
+<Layout title={data.title} description={data.resume}>
+  <article>
+    <p><a href="/realisations">&larr; Toutes les réalisations</a></p>
+    <h1>{data.title}</h1>
+
+    <dl class="field-list">
+      <div>
+        <dt>Statut</dt>
+        <dd><span class={`badge badge--${data.statut}`}>{data.statut === 'termine' ? 'Terminé' : 'En cours'}</span></dd>
+      </div>
+      <div>
+        <dt>Type</dt>
+        <dd>{typeLabels[data.type]}</dd>
+      </div>
+      <div>
+        <dt>Période</dt>
+        <dd>{data.periode}</dd>
+      </div>
+      <div>
+        <dt>Compétences</dt>
+        <dd>{data.competences.join(', ') || 'à définir'}</dd>
+      </div>
+    </dl>
+
+    <ul class="tag-list">
+      {data.technologies.map((tech) => <li class="tag">{tech}</li>)}
+    </ul>
+
+    <Content />
+  </article>
+</Layout>

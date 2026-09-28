@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const allCompetences = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'] as const;
+
+const realisations = (await getCollection('realisations', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const covered = new Set(realisations.flatMap((r) => r.data.competences));
+const uncovered = allCompetences.filter((c) => !covered.has(c));
+---
+
+<Layout
+  title="Compétences"
+  description="Tableau de couverture des compétences du bloc 1 par les réalisations."
+>
+  <h1>Compétences</h1>
+  <p>Couverture des six compétences du bloc 1 par les réalisations du portfolio.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Réalisation</th>
+          {allCompetences.map((c) => <th scope="col">{c}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          realisations.map((r) => (
+            <tr>
+              <th scope="row"><a href={`/realisations/${r.id}`}>{r.data.title}</a></th>
+              {allCompetences.map((c) => <td>{r.data.competences.includes(c) ? '✓' : ''}</td>)}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    {
+      uncovered.length > 0 ? (
+        <>Compétences non couvertes à ce jour : {uncovered.join(', ')}.</>
+      ) : (
+        'Les six compétences sont couvertes par au moins une réalisation.'
+      )
+    }
+  </p>
+</Layout>

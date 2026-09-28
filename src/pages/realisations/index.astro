@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const typeLabels: Record<string, string> = {
+  tp: 'TP',
+  projet: 'Projet',
+  stage: 'Stage',
+  perso: 'Personnel',
+};
+
+const realisations = (await getCollection('realisations', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="Réalisations" description="Liste des réalisations : TP, projets, stage et travaux personnels.">
+  <h1>Réalisations</h1>
+
+  <div class="filters" role="group" aria-label="Filtrer par type" id="filtres">
+    <a href="#" data-type="all" aria-current="true">Tous</a>
+    {
+      Object.entries(typeLabels).map(([value, label]) => (
+        <a href="#" data-type={value}>{label}</a>
+      ))
+    }
+  </div>
+
+  {
+    realisations.length === 0 ? (
+      <p class="empty-state">Aucune réalisation publiée pour le moment.</p>
+    ) : (
+      <ul class="item-list" id="liste-realisations">
+        {realisations.map((r) => (
+          <li data-type={r.data.type}>
+            <a class="item-row" href={`/realisations/${r.id}`}>
+              <div class="item-row__header">
+                <span class="item-row__title">{r.data.title}</span>
+                <span class="item-row__meta">
+                  <span class={`badge badge--${r.data.statut}`}>
+                    {r.data.statut === 'termine' ? 'Terminé' : 'En cours'}
+                  </span>
+                  · {typeLabels[r.data.type]} · {r.data.periode}
+                </span>
+              </div>
+              <p class="item-row__resume">{r.data.resume}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <script>
+    const filtres = document.getElementById('filtres');
+    const liste = document.getElementById('liste-realisations');
+
+    if (filtres && liste) {
+      const items = Array.from(liste.children) as HTMLElement[];
+      const links = Array.from(filtres.querySelectorAll('a')) as HTMLAnchorElement[];
+
+      filtres.addEventListener('click', (event) => {
+        const target = (event.target as HTMLElement).closest('a[data-type]') as HTMLAnchorElement | null;
+        if (!target) return;
+        event.preventDefault();
+
+        const type = target.dataset.type;
+        links.forEach((link) => link.removeAttribute('aria-current'));
+        target.setAttribute('aria-current', 'true');
+
+        items.forEach((item) => {
+          const show = type === 'all' || item.dataset.type === type;
+          item.hidden = !show;
+        });
+      });
+    }
+  </script>
+</Layout>

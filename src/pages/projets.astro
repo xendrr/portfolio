@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const projets = (
+  await getCollection('realisations', ({ data }) => !data.draft && data.type === 'projet')
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout title="Projets" description="Réalisations de type projet.">
+  <h1>Projets</h1>
+
+  {
+    projets.length === 0 ? (
+      <p class="empty-state">Aucun projet publié pour le moment.</p>
+    ) : (
+      <ul class="item-list">
+        {projets.map((r) => (
+          <li>
+            <a class="item-row" href={`/realisations/${r.id}`}>
+              <div class="item-row__header">
+                <span class="item-row__title">{r.data.title}</span>
+                <span class="item-row__meta">
+                  <span class={`badge badge--${r.data.statut}`}>
+                    {r.data.statut === 'termine' ? 'Terminé' : 'En cours'}
+                  </span>
+                  · {r.data.periode}
+                </span>
+              </div>
+              <p class="item-row__resume">{r.data.resume}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>

@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const fiches = (await getCollection('veille', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="Veille" description="Fiches de veille technologique.">
+  <h1>Veille</h1>
+
+  {
+    fiches.length === 0 ? (
+      <p class="empty-state">Aucune fiche de veille publiée pour le moment.</p>
+    ) : (
+      <ul class="item-list">
+        {fiches.map((f) => (
+          <li>
+            <a class="item-row" href={`/veille/${f.id}`}>
+              <div class="item-row__header">
+                <span class="item-row__title">{f.data.title}</span>
+                <span class="item-row__meta">{f.data.theme}</span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>

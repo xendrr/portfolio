@@ -1,17 +1,36 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import LabSchema from '../components/LabSchema.astro';
 
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Alexandre Bahar',
+  url: 'https://alexandrebahar.com',
+  jobTitle: 'Étudiant BTS SIO option SISR',
+  sameAs: [],
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+  title="Accueil"
+  description="Portfolio professionnel d'Alexandre Bahar, étudiant en BTS SIO option SISR."
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
+  </Fragment>
+
+  <section class="hero">
+    <h1>Alexandre Bahar</h1>
+    <p>Étudiant en 2<sup>e</sup> année de BTS SIO, option SISR (session 2027).</p>
+    <p class="hero__objectif">
+      Objectif : à compléter.
+    </p>
+  </section>
+
+  <section>
+    <h2>Schéma du lab</h2>
+    <p>Chaque élément renvoie vers la fiche de réalisation correspondante.</p>
+    <LabSchema />
+  </section>
+</Layout>
