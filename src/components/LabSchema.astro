@@ -1,0 +1,50 @@
+---
+const nodes = [
+  { href: '/realisations/active-directory', label: 'VM Windows Server', sub: 'Active Directory (AD DS)', y: 60, status: 'termine' },
+  { href: '/realisations/serveur-web-apache', label: 'VM Ubuntu Server', sub: 'Apache2', y: 160, status: 'termine' },
+  { href: '/realisations/vpn', label: 'VPN', sub: 'en cours', y: 260, status: 'en-cours' },
+];
+---
+
+<div class="lab-schema-wrap">
+  <svg
+    class="lab-schema"
+    viewBox="0 0 700 320"
+    xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-labelledby="lab-schema-title"
+  >
+    <title id="lab-schema-title">Schéma du lab : un hyperviseur héberge une VM Windows Server (Active Directory), une VM Ubuntu Server (Apache2) et un VPN en cours de mise en place.</title>
+
+    <rect class="schema-node" x="40" y="140" width="140" height="60" rx="6" />
+    <text x="110" y="165" text-anchor="middle" font-size="15" font-weight="600">Hyperviseur</text>
+    <text class="schema-secondary-text" x="110" y="184" text-anchor="middle" font-size="12">Poste de lab</text>
+
+    {
+      nodes.map((node) => (
+        <line class="schema-line" x1="180" y1="170" x2="420" y2={node.y + 30} stroke-width="1" />
+      ))
+    }
+
+    {
+      nodes.map((node) => (
+        <a href={node.href}>
+          <rect
+            class={`schema-node${node.status === 'en-cours' ? ' schema-node--progress' : ''}`}
+            x="420"
+            y={node.y}
+            width="240"
+            height="60"
+            rx="6"
+          />
+          <text x="540" y={node.y + 25} text-anchor="middle" font-size="15" font-weight="600">
+            {node.label}
+          </text>
+          <text class="schema-secondary-text" x="540" y={node.y + 44} text-anchor="middle" font-size="12">
+            {node.sub}
+          </text>
+        </a>
+      ))
+    }
+  </svg>
+</div>

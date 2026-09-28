@@ -1,0 +1,88 @@
+---
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '../styles/global.css';
+import SEO from '../components/SEO.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const { title, description, image } = Astro.props;
+const path = Astro.url.pathname;
+
+const primaryNav = [
+  { href: '/realisations', label: 'Réalisations' },
+  { href: '/competences', label: 'Compétences' },
+  { href: '/veille', label: 'Veille' },
+  { href: '/stage', label: 'Stage' },
+  { href: '/profil', label: 'Profil' },
+];
+
+const footerNav = [
+  { href: '/projets', label: 'Projets' },
+  { href: '/documentation', label: 'Documentation' },
+  { href: '/projet-professionnel', label: 'Projet professionnel' },
+  { href: '/cv', label: 'CV' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/mentions-legales', label: 'Mentions légales' },
+];
+
+const isCurrent = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <SEO title={title} description={description} image={image} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="site-title" href="/">Alexandre Bahar</a>
+        <nav aria-label="Navigation principale">
+          <ul class="site-nav">
+            {
+              primaryNav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="contenu" class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <nav aria-label="Navigation secondaire">
+          <ul>
+            {
+              footerNav.map((item) => (
+                <li>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <p>&copy; {new Date().getFullYear()} Alexandre Bahar</p>
+      </div>
+    </footer>
+  </body>
+</html>
