@@ -35,7 +35,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --color-bg: #131a24;
     --color-surface: #1b2430;
     --color-ink: #e4e8ee;
@@ -47,4 +47,17 @@
 
     --focus-ring: 0 0 0 3px rgba(127, 176, 232, 0.4);
   }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #131a24;
+  --color-surface: #1b2430;
+  --color-ink: #e4e8ee;
+  --color-ink-secondary: #9aa7b8;
+  --color-border: #2a3644;
+  --color-accent: #7fb0e8;
+  --color-status-done: #4fae7c;
+  --color-status-progress: #d08a2e;
+
+  --focus-ring: 0 0 0 3px rgba(127, 176, 232, 0.4);
 }

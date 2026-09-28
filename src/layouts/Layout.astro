@@ -4,6 +4,7 @@ import '@fontsource/ibm-plex-sans/600.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 interface Props {
   title: string;
@@ -43,6 +44,18 @@ const isCurrent = (href: string) =>
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <SEO title={title} description={description} image={image} />
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.setAttribute('data-theme', stored);
+          }
+        } catch (e) {
+          // localStorage indisponible : le site suit prefers-color-scheme.
+        }
+      })();
+    </script>
     <slot name="head" />
   </head>
   <body>
@@ -50,19 +63,22 @@ const isCurrent = (href: string) =>
     <header class="site-header">
       <div class="container site-header__inner">
         <a class="site-title" href="/">Alexandre Bahar</a>
-        <nav aria-label="Navigation principale">
-          <ul class="site-nav">
-            {
-              primaryNav.map((item) => (
-                <li>
-                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
+        <div class="site-header__actions">
+          <nav aria-label="Navigation principale">
+            <ul class="site-nav">
+              {
+                primaryNav.map((item) => (
+                  <li>
+                    <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
     <main id="contenu" class="container">
