@@ -1,0 +1,37 @@
+# Galerie : une entrée par photo, sous forme d'objet indexé par un identifiant
+# unique (la clé YAML). Champs :
+#   image      : chemin vers le fichier dans src/assets/galerie/ (obligatoire)
+#   alt        : description pour les lecteurs d'écran (obligatoire)
+#   legende    : courte phrase affichée sous la photo (optionnel)
+#   date       : date de la photo, format AAAA-MM-JJ (obligatoire)
+#   categorie  : stage | lab | materiel (obligatoire)
+#   realisation: slug d'une fiche dans src/content/realisations/ (optionnel)
+#
+# Exemples (commentés, sans photo réelle : décommenter et adapter une fois de
+# vraies photos déposées dans src/assets/galerie/) :
+#
+# exemple-stage-accueil:
+#   image: ../assets/galerie/exemple-stage-accueil.jpg
+#   alt: "À compléter : description de la photo pour les lecteurs d'écran"
+#   legende: "À compléter"
+#   date: 2026-01-15
+#   categorie: stage
+#   realisation: à compléter
+#
+# exemple-lab-baie:
+#   image: ../assets/galerie/exemple-lab-baie.jpg
+#   alt: "À compléter : description de la photo pour les lecteurs d'écran"
+#   legende: "À compléter"
+#   date: 2026-01-15
+#   categorie: lab
+
+# Entrée technique : ne pas supprimer. La collection a besoin d'au moins une
+# entrée réelle pour qu'Astro ne déclenche pas un avertissement de build sur
+# une collection vide. draft: true la garde filtrée de toutes les pages
+# publiques (même mécanisme que src/content/veille/exemple.md).
+_technique-ne-pas-supprimer:
+  image: ../assets/galerie/_reserve.png
+  alt: "Entrée technique interne, jamais affichée"
+  date: 2026-09-28
+  categorie: materiel
+  draft: true

@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+
+const categorieLabels: Record<string, string> = {
+  stage: 'Stage',
+  lab: 'Lab',
+  materiel: 'Matériel',
+};
+
+const photos = (await getCollection('galerie', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="Galerie" description="Photos du stage, du lab et du matériel utilisé.">
+  <h1>Galerie</h1>
+
+  {
+    photos.length === 0 ? (
+      <p class="empty-state">Aucune photo dans la galerie pour le moment.</p>
+    ) : (
+      <>
+        <div class="filters" role="group" aria-label="Filtrer par catégorie" id="filtres-galerie">
+          <a href="#" data-categorie="all" aria-current="true">
+            Toutes
+          </a>
+          {Object.entries(categorieLabels).map(([value, label]) => (
+            <a href="#" data-categorie={value}>
+              {label}
+            </a>
+          ))}
+        </div>
+
+        <ul class="gallery-grid" id="galerie-grid">
+          {photos.map((photo, index) => (
+            <li data-categorie={photo.data.categorie}>
+              <button type="button" class="gallery-item" data-dialog={`galerie-dialog-${index}`}>
+                <Image src={photo.data.image} alt={photo.data.alt} loading="lazy" decoding="async" />
+                {photo.data.legende && <span class="gallery-item__legende">{photo.data.legende}</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {photos.map((photo, index) => (
+          <dialog class="gallery-dialog" id={`galerie-dialog-${index}`}>
+            <form method="dialog">
+              <button type="submit" class="gallery-dialog__close" aria-label="Fermer">
+                &times;
+              </button>
+            </form>
+            <Image src={photo.data.image} alt={photo.data.alt} loading="lazy" decoding="async" />
+            {photo.data.legende && <p class="gallery-dialog__legende">{photo.data.legende}</p>}
+            <p class="gallery-dialog__meta">
+              {photo.data.date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              {photo.data.realisation && (
+                <>
+                  {' '}
+                  · <a href={`/realisations/${photo.data.realisation}`}>Voir la réalisation liée</a>
+                </>
+              )}
+            </p>
+          </dialog>
+        ))}
+
+        <script>
+          const filtres = document.getElementById('filtres-galerie');
+          const grille = document.getElementById('galerie-grid');
+
+          if (filtres && grille) {
+            const items = Array.from(grille.children) as HTMLElement[];
+            const liens = Array.from(filtres.querySelectorAll('a')) as HTMLAnchorElement[];
+
+            filtres.addEventListener('click', (event) => {
+              const cible = (event.target as HTMLElement).closest('a[data-categorie]') as HTMLAnchorElement | null;
+              if (!cible) return;
+              event.preventDefault();
+
+              const categorie = cible.dataset.categorie;
+              liens.forEach((lien) => lien.removeAttribute('aria-current'));
+              cible.setAttribute('aria-current', 'true');
+
+              items.forEach((item) => {
+                item.hidden = !(categorie === 'all' || item.dataset.categorie === categorie);
+              });
+            });
+          }
+
+          document.querySelectorAll<HTMLButtonElement>('.gallery-item').forEach((bouton) => {
+            bouton.addEventListener('click', () => {
+              const id = bouton.dataset.dialog;
+              const dialog = id ? document.getElementById(id) : null;
+              if (dialog instanceof HTMLDialogElement) dialog.showModal();
+            });
+          });
+
+          document.querySelectorAll<HTMLDialogElement>('.gallery-dialog').forEach((dialog) => {
+            dialog.addEventListener('click', (event) => {
+              if (event.target === dialog) dialog.close();
+            });
+          });
+        </script>
+      </>
+    )
+  }
+</Layout>

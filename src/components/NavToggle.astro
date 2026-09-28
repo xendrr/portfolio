@@ -1,0 +1,47 @@
+---
+---
+
+<button
+  type="button"
+  class="nav-toggle"
+  id="nav-toggle"
+  aria-controls="primary-nav"
+  aria-label="Ouvrir le menu"
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <line x1="4" y1="7" x2="20" y2="7" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="17" x2="20" y2="17" />
+  </svg>
+</button>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const nav = document.getElementById('primary-nav');
+  const media = window.matchMedia('(max-width: 640px)');
+
+  function setExpanded(expanded: boolean) {
+    if (!toggle || !nav) return;
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.setAttribute('aria-label', expanded ? 'Fermer le menu' : 'Ouvrir le menu');
+    nav.hidden = !expanded;
+  }
+
+  function syncToViewport() {
+    setExpanded(!media.matches);
+  }
+
+  syncToViewport();
+  media.addEventListener('change', syncToViewport);
+
+  toggle?.addEventListener('click', () => {
+    setExpanded(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && media.matches && toggle?.getAttribute('aria-expanded') === 'true') {
+      setExpanded(false);
+      toggle.focus();
+    }
+  });
+</script>

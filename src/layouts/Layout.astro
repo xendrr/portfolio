@@ -6,6 +6,7 @@ import '@fontsource/red-hat-mono/400.css';
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import NavToggle from '../components/NavToggle.astro';
 
 interface Props {
   title: string;
@@ -20,6 +21,7 @@ const primaryNav = [
   { href: '/realisations', label: 'Réalisations' },
   { href: '/competences', label: 'Compétences' },
   { href: '/stage', label: 'Stage' },
+  { href: '/galerie', label: 'Galerie' },
   { href: '/profil', label: 'Profil' },
   { href: '/cv', label: 'CV' },
 ];
@@ -65,21 +67,24 @@ const isCurrent = (href: string) =>
       <div class="container site-header__inner">
         <a class="site-title" href="/">Alexandre Bahar</a>
         <div class="site-header__actions">
-          <nav aria-label="Navigation principale">
-            <ul class="site-nav">
-              {
-                primaryNav.map((item) => (
-                  <li>
-                    <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                      {item.label}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </nav>
+          <NavToggle />
           <ThemeToggle />
         </div>
+      </div>
+      <div class="container site-header__nav-row">
+        <nav id="primary-nav" class="site-nav-wrap" aria-label="Navigation principale">
+          <ul class="site-nav">
+            {
+              primaryNav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
       </div>
     </header>
     <main id="contenu" class="container">

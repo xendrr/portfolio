@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { glob, file } from 'astro/loaders';
 
 const competence = z.enum(['C1', 'C2', 'C3', 'C4', 'C5', 'C6']);
 
@@ -31,4 +31,18 @@ const veille = defineCollection({
   }),
 });
 
-export const collections = { realisations, veille };
+const galerie = defineCollection({
+  loader: file('src/content/galerie.yaml'),
+  schema: ({ image }) =>
+    z.object({
+      image: image(),
+      alt: z.string(),
+      legende: z.string().optional(),
+      date: z.date(),
+      categorie: z.enum(['stage', 'lab', 'materiel']),
+      realisation: z.string().optional(),
+      draft: z.boolean().default(false),
+    }),
+});
+
+export const collections = { realisations, veille, galerie };
