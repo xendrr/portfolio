@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const statutLabels = {
+  obtenue: 'Obtenue',
+  'en-cours': 'En cours',
+  prevue: 'Prévue',
+} as const;
+
+// L'ordre d'affichage suit le numéro en tête de clé dans certifications.yaml.
+const entrees = (await getCollection('certifications')).sort((a, b) => a.id.localeCompare(b.id));
+
+const sections = [
+  {
+    titre: 'Obtenues',
+    liste: entrees.filter((e) => e.data.statut === 'obtenue'),
+    vide: 'Aucune certification obtenue pour le moment.',
+  },
+  {
+    titre: 'En cours et prévues',
+    liste: entrees.filter((e) => e.data.statut !== 'obtenue'),
+    vide: 'Aucune certification en cours ni prévue pour le moment.',
+  },
+];
+---
+
+<Layout
+  title="Certifications"
+  description="Certifications obtenues, en cours et prévues : réseaux, cybersécurité et anglais."
+>
+  <h1>Certifications</h1>
+
+  {
+    sections.map((section) => (
+      <section>
+        <h2>{section.titre}</h2>
+
+        {section.liste.length === 0 ? (
+          <p class="empty-state">{section.vide}</p>
+        ) : (
+          <ul class="certifications">
+            {section.liste.map((e) => (
+              <li class="certification">
+                {/* Icône générique : aucun logo officiel d'organisme. */}
+                <svg
+                  class="certification__icone"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="9" r="5" />
+                  <path d="M9 13.5 8 21l4-2 4 2-1-7.5" />
+                </svg>
+
+                <h3 class="certification__nom">{e.data.nom}</h3>
+                <p class="certification__organisme">{e.data.organisme}</p>
+
+                <p class="certification__meta">
+                  <span class={`badge badge--${e.data.statut}`}>
+                    <span class="status-dot" aria-hidden="true" />
+                    {statutLabels[e.data.statut]}
+                  </span>
+                  {e.data.date && <span class="certification__date">{e.data.date}</span>}
+                </p>
+
+                {e.data.description && <p class="certification__description">{e.data.description}</p>}
+
+                {e.data.verification && (
+                  <p class="certification__action">
+                    <a
+                      class="certification__lien"
+                      href={e.data.verification}
+                      target="_blank"
+                      rel="noopener"
+                      aria-label={`Vérifier la certification ${e.data.nom} (nouvel onglet)`}
+                    >
+                      Vérifier
+                    </a>
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ))
+  }
+</Layout>

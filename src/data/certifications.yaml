@@ -1,0 +1,56 @@
+# Certifications affichées sur la page /certifications.
+#
+# LES DATES, DESCRIPTIONS ET LIENS SONT À REMPLIR PAR MOI : ils valent
+# « À compléter » ou sont vides tant que je ne les ai pas renseignés.
+#
+# Chaque entrée :
+#   clé          : identifiant unique. Le numéro en tête fixe l'ordre
+#                  d'affichage à l'intérieur de sa section.
+#   nom          : intitulé exact de la certification
+#   organisme    : qui la délivre
+#   statut       : obtenue | en-cours | prevue
+#   date         : mois d'obtention ou visé, par exemple 2026-03
+#   description  : une phrase
+#   verification : lien Credly ou page officielle de vérification,
+#                  facultatif — le bouton « Vérifier » n'apparaît que
+#                  si ce champ est rempli
+
+01-cisco-notions-reseaux:
+  nom: "Notions de base sur les réseaux"
+  organisme: "Cisco Networking Academy"
+  statut: obtenue
+  date: "À compléter"
+  description: "À compléter."
+  verification: ""
+
+02-cisco-equipements-reseau:
+  nom: "Équipements réseau et configuration initiale"
+  organisme: "Cisco Networking Academy"
+  statut: obtenue
+  date: "À compléter"
+  description: "À compléter."
+  verification: ""
+
+03-secnumacademie:
+  nom: "Attestation SecNumacadémie"
+  organisme: "ANSSI"
+  statut: obtenue
+  date: "À compléter"
+  description: "À compléter."
+  verification: ""
+
+04-fortinet:
+  nom: "Formation Fortinet"
+  organisme: "Fortinet Training Institute"
+  statut: en-cours
+  date: "À compléter"
+  description: "À compléter."
+  verification: ""
+
+05-toeic:
+  nom: "TOEIC"
+  organisme: "ETS"
+  statut: prevue
+  date: "À compléter"
+  description: "À compléter."
+  verification: ""

@@ -75,4 +75,16 @@ const competences = defineCollection({
   ]),
 });
 
-export const collections = { realisations, veille, galerie, competences, stage };
+const certifications = defineCollection({
+  loader: file('src/data/certifications.yaml'),
+  schema: z.object({
+    nom: z.string(),
+    organisme: z.string(),
+    statut: z.enum(['obtenue', 'en-cours', 'prevue']),
+    date: z.string().default(''),
+    description: z.string().default(''),
+    verification: z.string().default(''),
+  }),
+});
+
+export const collections = { realisations, veille, galerie, competences, stage, certifications };
