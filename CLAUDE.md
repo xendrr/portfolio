@@ -54,16 +54,16 @@ Chaque fiche de réalisation suit exactement la trame de l'école (voir §5).
 ## 4. Arborescence des pages
 
 ```
-/                       Accueil
-/profil                 Présentation (10–15 lignes), technos maîtrisées / en cours, 3 technos visées, parcours
+/                       Accueil (présentation courte + schéma du lab interactif)
 /competences            Niveaux par domaine et langues (src/data/competences.yaml),
                         puis tableau de couverture C1–C6 replié derrière un bouton
+/certifications         Certifications obtenues, en cours et prévues (src/data/certifications.yaml)
 /realisations           Liste des réalisations (filtrable par type : TP, projet, stage, perso)
 /realisations/[slug]    Fiche détaillée
 /projets                Réalisations de type "projet" uniquement
 /veille                 Liste des fiches de veille
 /veille/[slug]          Fiche de veille
-/stage                  Contexte, entreprise, missions, bilan (contenu "À compléter" au départ)
+/stage                  Contexte, missions, bilan — tout le contenu vient de src/content/stage.md
 /documentation          Procédures et ressources produites (liens vers les fiches ou fichiers)
 /projet-professionnel   Objectif après le BTS + plan de progression
 /cv                     Titre + bouton de téléchargement de /cv.pdf, rien d'autre
@@ -72,7 +72,11 @@ Chaque fiche de réalisation suit exactement la trame de l'école (voir §5).
 /404                    Page d'erreur utile (liens vers accueil et réalisations)
 ```
 
-Navigation principale : Réalisations, Compétences, Veille, Stage, Profil. Le reste (Projets, Documentation, Projet professionnel, CV, Contact, Mentions légales) dans le pied de page et via des liens contextuels.
+Navigation principale : Réalisations, Compétences, Certifications, Stage, Galerie, CV, puis le bouton de thème. En dessous de 640 px elle passe derrière un menu repliable (`aria-expanded`, fermeture par Échap). Le reste (Projets, Documentation, Projet professionnel, Contact, Veille) dans le pied de page et via des liens contextuels.
+
+**Il n'y a plus de page `/profil`** : son contenu n'avait jamais été rédigé et la présentation tient en une ligne sur l'accueil. `astro.config.mjs` redirige `/profil` vers `/` pour ne pas casser les liens déjà partagés. Ne pas la recréer sans demander.
+
+« Mentions légales » reste en bas de page, en petit texte de la couleur secondaire : pas de bouton, pas de couleur d'accent, pas de soulignement permanent.
 
 Le pied de page ne contient que des liens internes, dont **Contact**. L'adresse e-mail, LinkedIn et GitHub ne sont affichés **que** sur `/contact` : ne pas les dupliquer dans le pied de page ni sur `/cv`. Le JSON-LD `Person` de l'accueil garde `sameAs` (LinkedIn, GitHub) : c'est une donnée invisible destinée aux moteurs, elle n'est pas concernée.
 
@@ -113,6 +117,26 @@ draft: false
 
 Corps : Pourquoi ce sujet · Résumé · Points techniques · Avantages / limites · Impact pour une entreprise · Impact sur mon métier · Expérimentation · Analyse personnelle · Sources complémentaires.
 
+### Stage — `src/content/stage.md`
+
+Fichier unique, modifiable sans toucher au code. Frontmatter : `entreprise`, `ville`, `periode`, `tuteur`, `service` (affichés en liste de métadonnées, comme sur les fiches). Le corps garde les sections Contexte, Missions et Bilan en `##`. La page `/stage` ne contient aucun texte en dur.
+
+### Certifications — `src/data/certifications.yaml`
+
+Un fichier, une entrée par certification, chargé par la collection `certifications` :
+
+```yaml
+01-cisco-notions-reseaux:
+  nom: "Notions de base sur les réseaux"
+  organisme: "Cisco Networking Academy"
+  statut: obtenue             # obtenue | en-cours | prevue
+  date: "À compléter"         # par exemple 2026-03
+  description: "À compléter."
+  verification: ""            # lien Credly ou officiel, facultatif
+```
+
+Comme pour les compétences, le **numéro en tête de clé fixe l'ordre** d'affichage. La page `/certifications` range les entrées en deux sections, « Obtenues » puis « En cours et prévues », en grille 1/2/3 colonnes. Chaque carte porte une **icône SVG générique — jamais le logo officiel d'un organisme** —, un badge de statut avec le même voyant que les réalisations, et un bouton « Vérifier » qui n'apparaît que si `verification` est rempli (nouvel onglet, `rel="noopener"`). Ni effet lumineux ni animation.
+
 ### Compétences et langues — `src/data/competences.yaml`
 
 Un seul fichier, modifiable sans toucher au code, chargé par la collection `competences` (loader `file()`) :
@@ -124,20 +148,20 @@ Un seul fichier, modifiable sans toucher au code, chargé par la collection `com
   niveau: 50                  # 0 à 100, affiché en barre et en chiffres
   details:                    # compétences précises, visibles au dépliage
     - "Active Directory : utilisateurs, groupes, unités d'organisation"
-  realisations: [active-directory]   # slugs des fiches qui le prouvent
 
 01-francais:
   groupe: langue
   categorie: "Français"
-  niveau: 50
-  cecrl: C2                   # A1 à C2, facultatif, langues uniquement
+  niveau: "Natif"             # texte libre : ni barre ni pourcentage
 ```
+
+Le schéma est une union discriminée sur `groupe` : une catégorie a un `niveau` chiffré et des `details`, une langue a un `niveau` en toutes lettres. Les langues ne portent **ni barre ni pourcentage**, et aucune entrée ne référence de réalisation.
 
 Le **numéro en tête de clé fixe l'ordre d'affichage** (les entrées sont triées par clé) : renuméroter pour réordonner. Les `details` pré-remplis portent un commentaire `# à vérifier` tant qu'ils n'ont pas été validés ; les `niveau` valent 50 par défaut, c'est une valeur provisoire à remplacer.
 
 ### Page `/competences`
 
-Elle s'ouvre sur **« Ce que je maîtrise »** : une ligne par catégorie avec le nom, une jauge et le pourcentage en chiffres. La ligne se déplie en `<details>`/`<summary>` natif (clavier, sans JavaScript) sur la liste `details` puis « Prouvé par : » avec des liens vers les fiches. La jauge est décorative (`aria-hidden`) : c'est le pourcentage écrit qui est lu par les lecteurs d'écran. Une section **Langues** suit, sans dépliage.
+Elle s'ouvre sur **« Ce que je maîtrise »** : une ligne par catégorie avec le nom, une jauge et le pourcentage en chiffres. La ligne se déplie en `<details>`/`<summary>` natif (clavier, sans JavaScript) sur la liste `details`. La jauge est décorative (`aria-hidden`) : c'est le pourcentage écrit qui est lu par les lecteurs d'écran. Une section **Langues** suit, en liste simple « nom : niveau », sans jauge ni dépliage.
 
 Le **tableau de couverture C1–C6** vient ensuite, replié derrière un bouton. Il lit toutes les réalisations non-draft et construit le tableau réalisations × C1–C6 ; chaque ligne renvoie vers la fiche et une ligne de synthèse indique les compétences non couvertes. C'est un `<summary>` natif : son état déplié/replié est déjà exposé aux lecteurs d'écran, ne pas y ajouter d'`aria-expanded` géré à la main.
 
@@ -175,6 +199,8 @@ Mode sombre (fond `#151B1F`, surface `#1C2429`, texte `#E3E8E6`, texte secondair
 Typographie : **Red Hat Display** pour les titres (`h1`–`h4`), **Red Hat Text** pour le reste du texte, **Red Hat Mono** réservée au contenu réellement technique (commandes, adresses IP, noms de services, blocs de code). Échelle typographique modérée, lignes ≤ 75 caractères, texte aligné à gauche.
 
 L'élément marquant (un seul) : sur l'accueil, un **schéma SVG du lab** dessiné à la main dans le code (hyperviseur → VM Windows Server AD, VM Ubuntu Apache, VPN "en cours"), sobre, avec des traits fins. Chaque nœud du schéma est un lien vers la fiche correspondante. Tout le reste reste calme.
+
+Le schéma est **navigable** : zoom à la molette ancré sur le curseur, pincement à deux doigts, glisser pour déplacer, et boutons `+`, `−` et « Recentrer » en coin. Échelle bornée entre 0,5× et 3×. Au clavier, le SVG est focusable : flèches pour déplacer, `+` et `−` pour zoomer, `0` pour recentrer. À l'échelle 1 le doigt fait défiler la page (`touch-action: pan-y`) ; le déplacement à un doigt ne s'active qu'une fois zoomé. La capture du pointeur n'est prise qu'au premier vrai glissé, sinon un clic après glissement ouvrirait une fiche par erreur. Le SVG ne porte **pas** `role="img"`, qui masquerait les liens des nœuds aux lecteurs d'écran. Les liaisons hyperviseur → VM sont en pointillés défilants (flux réseau) ; sous `prefers-reduced-motion` le trait redevient continu et l'animation s'arrête.
 
 Détail de caractère (un seul, en plus du schéma) : l'état d'une réalisation (terminé / en cours) s'affiche avec un petit voyant rond plein (façon LED de port réseau) à côté du texte, sans animation.
 
