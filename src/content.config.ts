@@ -45,4 +45,16 @@ const galerie = defineCollection({
     }),
 });
 
-export const collections = { realisations, veille, galerie };
+const competences = defineCollection({
+  loader: file('src/data/competences.yaml'),
+  schema: z.object({
+    groupe: z.enum(['competence', 'langue']),
+    categorie: z.string(),
+    niveau: z.number().int().min(0).max(100),
+    details: z.array(z.string()).default([]),
+    realisations: z.array(z.string()).default([]),
+    cecrl: z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).optional(),
+  }),
+});
+
+export const collections = { realisations, veille, galerie, competences };

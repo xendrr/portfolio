@@ -10,43 +10,144 @@ const realisations = (await getCollection('realisations', ({ data }) => !data.dr
 
 const covered = new Set(realisations.flatMap((r) => r.data.competences));
 const uncovered = allCompetences.filter((c) => !covered.has(c));
+
+const titreParSlug = new Map(realisations.map((r) => [r.id, r.data.title]));
+
+// L'ordre d'affichage suit le numéro en tête de clé dans competences.yaml.
+const entrees = (await getCollection('competences')).sort((a, b) => a.id.localeCompare(b.id));
+const savoirFaire = entrees.filter((e) => e.data.groupe === 'competence');
+const langues = entrees.filter((e) => e.data.groupe === 'langue');
 ---
 
 <Layout
   title="Compétences"
-  description="Tableau de couverture des compétences du bloc 1 par les réalisations."
+  description="Niveaux par domaine, langues, et couverture des compétences du bloc 1."
 >
   <h1>Compétences</h1>
-  <p>Couverture des six compétences du bloc 1 par les réalisations du portfolio.</p>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">Réalisation</th>
-          {allCompetences.map((c) => <th scope="col">{c}</th>)}
-        </tr>
-      </thead>
-      <tbody>
-        {
-          realisations.map((r) => (
-            <tr>
-              <th scope="row"><a href={`/realisations/${r.id}`}>{r.data.title}</a></th>
-              {allCompetences.map((c) => <td>{r.data.competences.includes(c) ? '✓' : ''}</td>)}
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  </div>
+  <section>
+    <h2>Ce que je maîtrise</h2>
 
-  <p>
-    {
-      uncovered.length > 0 ? (
-        <>Compétences non couvertes à ce jour : {uncovered.join(', ')}.</>
-      ) : (
-        'Les six compétences sont couvertes par au moins une réalisation.'
-      )
-    }
-  </p>
+    <ul class="niveaux">
+      {
+        savoirFaire.map((e) => {
+          const depliable = e.data.details.length > 0 || e.data.realisations.length > 0;
+
+          return (
+            <li>
+              {depliable ? (
+                <details class="niveau">
+                  <summary class="niveau__ligne">
+                    <span class="niveau__nom">{e.data.categorie}</span>
+                    <span class="niveau__jauge" aria-hidden="true">
+                      <span class="niveau__part" style={`--niveau: ${e.data.niveau}%`} />
+                    </span>
+                    <span class="niveau__valeur">{e.data.niveau}&nbsp;%</span>
+                  </summary>
+
+                  <div class="niveau__detail">
+                    {e.data.details.length > 0 && (
+                      <ul>
+                        {e.data.details.map((detail) => (
+                          <li>{detail}</li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {e.data.realisations.length > 0 && (
+                      <p class="niveau__preuves">
+                        Prouvé par :{' '}
+                        {e.data.realisations.map((slug, index) => (
+                          <>
+                            {index > 0 && ', '}
+                            {titreParSlug.has(slug) ? (
+                              <a href={`/realisations/${slug}`}>{titreParSlug.get(slug)}</a>
+                            ) : (
+                              slug
+                            )}
+                          </>
+                        ))}
+                      </p>
+                    )}
+                  </div>
+                </details>
+              ) : (
+                <div class="niveau__ligne niveau__ligne--fixe">
+                  <span class="niveau__nom">{e.data.categorie}</span>
+                  <span class="niveau__jauge" aria-hidden="true">
+                    <span class="niveau__part" style={`--niveau: ${e.data.niveau}%`} />
+                  </span>
+                  <span class="niveau__valeur">{e.data.niveau}&nbsp;%</span>
+                </div>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2>Langues</h2>
+
+    <ul class="niveaux">
+      {
+        langues.map((e) => (
+          <li>
+            <div class="niveau__ligne niveau__ligne--fixe">
+              <span class="niveau__nom">
+                {e.data.categorie}
+                {e.data.cecrl && <span class="niveau__cecrl">{e.data.cecrl}</span>}
+              </span>
+              <span class="niveau__jauge" aria-hidden="true">
+                <span class="niveau__part" style={`--niveau: ${e.data.niveau}%`} />
+              </span>
+              <span class="niveau__valeur">{e.data.niveau}&nbsp;%</span>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <details class="couverture">
+    <summary class="couverture__bouton">Afficher le tableau de couverture C1–C6</summary>
+
+    <p>Couverture des six compétences du bloc 1 par les réalisations du portfolio.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Réalisation</th>
+            {allCompetences.map((c) => <th scope="col">{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            realisations.map((r) => (
+              <tr>
+                <th scope="row">
+                  <a href={`/realisations/${r.id}`}>{r.data.title}</a>
+                </th>
+                {allCompetences.map((c) => (
+                  <td>{r.data.competences.includes(c) ? '✓' : ''}</td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      {
+        uncovered.length > 0 ? (
+          <>Compétences non couvertes à ce jour : {uncovered.join(', ')}.</>
+        ) : (
+          'Les six compétences sont couvertes par au moins une réalisation.'
+        )
+      }
+    </p>
+  </details>
 </Layout>

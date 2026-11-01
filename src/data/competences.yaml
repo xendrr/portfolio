@@ -1,0 +1,130 @@
+# Compétences affichées sur la page /competences.
+#
+# LES NIVEAUX SONT À REMPLIR PAR MOI : tous les `niveau` valent 50 par défaut,
+# c'est une valeur provisoire sans signification. Mettre une valeur de 0 à 100.
+#
+# Les lignes de `details` marquées « à vérifier » sont des compétences
+# attendues d'un BTS SIO option SISR, pré-remplies à titre de proposition :
+# supprimer celles que je ne maîtrise pas, reformuler les autres.
+#
+# Chaque entrée :
+#   clé          : identifiant unique. Le numéro en tête fixe l'ordre
+#                  d'affichage : renuméroter pour réordonner la liste.
+#   groupe       : competence | langue  (sépare les deux sections de la page)
+#   categorie    : le nom affiché
+#   niveau       : 0 à 100, affiché en barre et en chiffres
+#   details      : compétences précises, affichées quand on déplie la ligne
+#   realisations : slugs des fiches de src/content/realisations/ qui le prouvent
+#   cecrl        : A1 à C2, pour les langues uniquement, facultatif
+
+01-administration-systeme-windows:
+  groupe: competence
+  categorie: "Administration système Windows"
+  niveau: 50
+  details:
+    - "Active Directory : utilisateurs, groupes, unités d'organisation" # à vérifier
+    - "Stratégies de groupe (GPO)" # à vérifier
+    - "Services DNS et DHCP sous Windows Server" # à vérifier
+    - "Partages de fichiers et permissions NTFS" # à vérifier
+    - "Sauvegarde et restauration d'un serveur" # à vérifier
+    - "PowerShell : scripts d'administration courants" # à vérifier
+  realisations: [active-directory]
+
+02-administration-systeme-linux:
+  groupe: competence
+  categorie: "Administration système Linux"
+  niveau: 50
+  details:
+    - "Installation et configuration d'une distribution serveur (Debian, Ubuntu)" # à vérifier
+    - "Gestion des utilisateurs, des groupes et des droits" # à vérifier
+    - "Gestion des paquets (apt) et des services (systemd)" # à vérifier
+    - "Serveur web Apache2 : hôtes virtuels et configuration" # à vérifier
+    - "Accès distant en SSH et authentification par clé" # à vérifier
+    - "Scripts shell et tâches planifiées (cron)" # à vérifier
+  realisations: [serveur-web-apache]
+
+03-reseau-tcp-ip:
+  groupe: competence
+  categorie: "Réseau TCP/IP"
+  niveau: 50
+  details:
+    - "Adressage IPv4, masques et découpage en sous-réseaux" # à vérifier
+    - "Modèles OSI et TCP/IP" # à vérifier
+    - "Configuration de commutateurs et de VLAN" # à vérifier
+    - "Routage statique et routage dynamique" # à vérifier
+    - "Mise en place des services DHCP et DNS" # à vérifier
+    - "Analyse de trames avec Wireshark" # à vérifier
+  realisations: [vpn]
+
+04-cybersecurite:
+  groupe: competence
+  categorie: "Cybersécurité"
+  niveau: 50
+  details:
+    - "Pare-feu : écriture de règles de filtrage" # à vérifier
+    - "VPN : tunnel chiffré et accès distant" # à vérifier
+    - "Durcissement d'un poste et d'un serveur" # à vérifier
+    - "Gestion des identités et des droits d'accès" # à vérifier
+    - "Sauvegarde et plan de reprise d'activité" # à vérifier
+    - "Bonnes pratiques : mots de passe, hameçonnage, mises à jour" # à vérifier
+  realisations: [vpn]
+
+05-scripting-python:
+  groupe: competence
+  categorie: "Scripting Python"
+  niveau: 50
+  details:
+    - "Bases du langage : variables, conditions, boucles, fonctions" # à vérifier
+    - "Manipulation de fichiers et de chaînes de caractères" # à vérifier
+    - "Scripts d'automatisation de tâches d'administration" # à vérifier
+    - "Appel d'API REST et traitement de réponses JSON" # à vérifier
+    - "Gestion des erreurs et journalisation" # à vérifier
+  realisations: []
+
+06-developpement-web:
+  groupe: competence
+  categorie: "Développement web"
+  niveau: 50
+  details:
+    - "HTML sémantique et CSS" # à vérifier
+    - "JavaScript côté client : bases" # à vérifier
+    - "Intégration responsive et accessibilité" # à vérifier
+    - "Génération d'un site statique (Astro)" # à vérifier
+    - "Versionnage avec Git et déploiement continu" # à vérifier
+  realisations: [portfolio]
+
+07-bases-de-donnees:
+  groupe: competence
+  categorie: "Bases de données"
+  niveau: 50
+  details:
+    - "Modèle relationnel et schéma de données" # à vérifier
+    - "SQL : sélections, filtres et jointures" # à vérifier
+    - "Création et modification de tables" # à vérifier
+    - "Sauvegarde et restauration d'une base" # à vérifier
+    - "Gestion des droits d'accès aux données" # à vérifier
+  realisations: []
+
+01-francais:
+  groupe: langue
+  categorie: "Français"
+  niveau: 50
+  # cecrl: C2   # facultatif, de A1 à C2 — à remplir
+
+02-anglais:
+  groupe: langue
+  categorie: "Anglais"
+  niveau: 50
+  # cecrl: B2   # facultatif, de A1 à C2 — à remplir
+
+03-russe:
+  groupe: langue
+  categorie: "Russe"
+  niveau: 50
+  # cecrl: B1   # facultatif, de A1 à C2 — à remplir
+
+04-ukrainien:
+  groupe: langue
+  categorie: "Ukrainien"
+  niveau: 50
+  # cecrl: B1   # facultatif, de A1 à C2 — à remplir
