@@ -195,8 +195,17 @@ main {
   padding-block: var(--space-3);
 }
 
+/* Mention discrète : petit texte de la couleur secondaire, pas de bouton
+   ni de couleur d'accent, soulignement fin uniquement au survol. */
 .site-footer__legal {
+  color: var(--color-ink-secondary);
   font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.site-footer__legal:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
 }
 
 .badge {
