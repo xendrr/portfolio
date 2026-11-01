@@ -30,7 +30,7 @@ Chaque fiche de réalisation suit exactement la trame de l'école (voir §5).
 ## 3. Stack et contraintes techniques
 
 - **Astro** (dernière version stable), sortie **100 % statique** (`output: 'static'`). Pas d'adaptateur serveur, pas de SSR.
-- **Content Collections** avec schéma Zod dans `src/content.config.ts` pour `realisations` et `veille`.
+- **Content Collections** avec schéma Zod dans `src/content.config.ts` pour `realisations`, `veille`, `galerie` et `competences`.
 - CSS maison dans un seul fichier de tokens + styles de composants (`src/styles/`). Pas de Tailwind, pas de framework UI, pas de JavaScript client sauf besoin réel.
 - Polices auto-hébergées via `@fontsource` (aucune requête vers Google Fonts).
 - Intégration `@astrojs/sitemap`.
@@ -56,7 +56,8 @@ Chaque fiche de réalisation suit exactement la trame de l'école (voir §5).
 ```
 /                       Accueil
 /profil                 Présentation (10–15 lignes), technos maîtrisées / en cours, 3 technos visées, parcours
-/competences            Tableau de couverture généré automatiquement depuis les fiches
+/competences            Niveaux par domaine et langues (src/data/competences.yaml),
+                        puis tableau de couverture C1–C6 replié derrière un bouton
 /realisations           Liste des réalisations (filtrable par type : TP, projet, stage, perso)
 /realisations/[slug]    Fiche détaillée
 /projets                Réalisations de type "projet" uniquement
@@ -65,13 +66,15 @@ Chaque fiche de réalisation suit exactement la trame de l'école (voir §5).
 /stage                  Contexte, entreprise, missions, bilan (contenu "À compléter" au départ)
 /documentation          Procédures et ressources produites (liens vers les fiches ou fichiers)
 /projet-professionnel   Objectif après le BTS + plan de progression
-/cv                     Résumé + lien de téléchargement de /cv.pdf
+/cv                     Titre + bouton de téléchargement de /cv.pdf, rien d'autre
 /contact                Adresse e-mail (mailto), GitHub, LinkedIn. Pas de formulaire.
 /mentions-legales       Éditeur (nom, contact) + hébergeur (Cloudflare, Inc.)
 /404                    Page d'erreur utile (liens vers accueil et réalisations)
 ```
 
 Navigation principale : Réalisations, Compétences, Veille, Stage, Profil. Le reste (Projets, Documentation, Projet professionnel, CV, Contact, Mentions légales) dans le pied de page et via des liens contextuels.
+
+Le pied de page ne contient que des liens internes, dont **Contact**. L'adresse e-mail, LinkedIn et GitHub ne sont affichés **que** sur `/contact` : ne pas les dupliquer dans le pied de page ni sur `/cv`. Le JSON-LD `Person` de l'accueil garde `sameAs` (LinkedIn, GitHub) : c'est une donnée invisible destinée aux moteurs, elle n'est pas concernée.
 
 ## 5. Modèle de contenu
 
@@ -110,9 +113,33 @@ draft: false
 
 Corps : Pourquoi ce sujet · Résumé · Points techniques · Avantages / limites · Impact pour une entreprise · Impact sur mon métier · Expérimentation · Analyse personnelle · Sources complémentaires.
 
-### Tableau de couverture
+### Compétences et langues — `src/data/competences.yaml`
 
-La page `/competences` lit toutes les réalisations non-draft et construit le tableau réalisations × C1–C6. Chaque ligne renvoie vers la fiche. Une ligne de synthèse indique les compétences non couvertes.
+Un seul fichier, modifiable sans toucher au code, chargé par la collection `competences` (loader `file()`) :
+
+```yaml
+01-administration-systeme-windows:
+  groupe: competence          # competence | langue
+  categorie: "Administration système Windows"
+  niveau: 50                  # 0 à 100, affiché en barre et en chiffres
+  details:                    # compétences précises, visibles au dépliage
+    - "Active Directory : utilisateurs, groupes, unités d'organisation"
+  realisations: [active-directory]   # slugs des fiches qui le prouvent
+
+01-francais:
+  groupe: langue
+  categorie: "Français"
+  niveau: 50
+  cecrl: C2                   # A1 à C2, facultatif, langues uniquement
+```
+
+Le **numéro en tête de clé fixe l'ordre d'affichage** (les entrées sont triées par clé) : renuméroter pour réordonner. Les `details` pré-remplis portent un commentaire `# à vérifier` tant qu'ils n'ont pas été validés ; les `niveau` valent 50 par défaut, c'est une valeur provisoire à remplacer.
+
+### Page `/competences`
+
+Elle s'ouvre sur **« Ce que je maîtrise »** : une ligne par catégorie avec le nom, une jauge et le pourcentage en chiffres. La ligne se déplie en `<details>`/`<summary>` natif (clavier, sans JavaScript) sur la liste `details` puis « Prouvé par : » avec des liens vers les fiches. La jauge est décorative (`aria-hidden`) : c'est le pourcentage écrit qui est lu par les lecteurs d'écran. Une section **Langues** suit, sans dépliage.
+
+Le **tableau de couverture C1–C6** vient ensuite, replié derrière un bouton. Il lit toutes les réalisations non-draft et construit le tableau réalisations × C1–C6 ; chaque ligne renvoie vers la fiche et une ligne de synthèse indique les compétences non couvertes. C'est un `<summary>` natif : son état déplié/replié est déjà exposé aux lecteurs d'écran, ne pas y ajouter d'`aria-expanded` géré à la main.
 
 ## 6. Contenu de départ
 
