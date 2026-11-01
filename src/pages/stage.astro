@@ -1,27 +1,43 @@
 ---
+import { getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+
+// Tout le contenu de la page vit dans src/content/stage.md.
+const stage = await getEntry('stage', 'stage');
+
+if (!stage) {
+  throw new Error('src/content/stage.md est introuvable : la page /stage ne peut pas être générée.');
+}
+
+const { Content } = await render(stage);
+const { entreprise, ville, periode, tuteur, service } = stage.data;
 ---
 
 <Layout title="Stage" description="Contexte, entreprise, missions et bilan du stage.">
   <h1>Stage</h1>
 
-  <section>
-    <h2>Entreprise</h2>
-    <p>À compléter.</p>
-  </section>
+  <dl class="field-list">
+    <div>
+      <dt>Entreprise</dt>
+      <dd>{entreprise}</dd>
+    </div>
+    <div>
+      <dt>Ville</dt>
+      <dd>{ville}</dd>
+    </div>
+    <div>
+      <dt>Période</dt>
+      <dd>{periode}</dd>
+    </div>
+    <div>
+      <dt>Service</dt>
+      <dd>{service}</dd>
+    </div>
+    <div>
+      <dt>Tuteur</dt>
+      <dd>{tuteur}</dd>
+    </div>
+  </dl>
 
-  <section>
-    <h2>Contexte</h2>
-    <p>À compléter.</p>
-  </section>
-
-  <section>
-    <h2>Missions</h2>
-    <p>À compléter.</p>
-  </section>
-
-  <section>
-    <h2>Bilan</h2>
-    <p>À compléter.</p>
-  </section>
+  <Content />
 </Layout>

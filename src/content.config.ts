@@ -45,6 +45,17 @@ const galerie = defineCollection({
     }),
 });
 
+const stage = defineCollection({
+  loader: glob({ pattern: 'stage.md', base: './src/content' }),
+  schema: z.object({
+    entreprise: z.string(),
+    ville: z.string(),
+    periode: z.string(),
+    tuteur: z.string(),
+    service: z.string(),
+  }),
+});
+
 const competences = defineCollection({
   loader: file('src/data/competences.yaml'),
   schema: z.object({
@@ -57,4 +68,4 @@ const competences = defineCollection({
   }),
 });
 
-export const collections = { realisations, veille, galerie, competences };
+export const collections = { realisations, veille, galerie, competences, stage };
