@@ -14,8 +14,10 @@
 #   categorie    : le nom affiché
 #   niveau       : 0 à 100, affiché en barre et en chiffres
 #   details      : compétences précises, affichées quand on déplie la ligne
-#   realisations : slugs des fiches de src/content/realisations/ qui le prouvent
-#   cecrl        : A1 à C2, pour les langues uniquement, facultatif
+#                  (catégories uniquement)
+#
+# Pour les langues, `niveau` est un texte libre (« Natif », « C1–C2 »),
+# affiché tel quel : ni barre ni pourcentage.
 
 01-administration-systeme-windows:
   groupe: competence
@@ -28,7 +30,6 @@
     - "Partages de fichiers et permissions NTFS" # à vérifier
     - "Sauvegarde et restauration d'un serveur" # à vérifier
     - "PowerShell : scripts d'administration courants" # à vérifier
-  realisations: [active-directory]
 
 02-administration-systeme-linux:
   groupe: competence
@@ -41,7 +42,6 @@
     - "Serveur web Apache2 : hôtes virtuels et configuration" # à vérifier
     - "Accès distant en SSH et authentification par clé" # à vérifier
     - "Scripts shell et tâches planifiées (cron)" # à vérifier
-  realisations: [serveur-web-apache]
 
 03-reseau-tcp-ip:
   groupe: competence
@@ -54,7 +54,6 @@
     - "Routage statique et routage dynamique" # à vérifier
     - "Mise en place des services DHCP et DNS" # à vérifier
     - "Analyse de trames avec Wireshark" # à vérifier
-  realisations: [vpn]
 
 04-cybersecurite:
   groupe: competence
@@ -67,7 +66,6 @@
     - "Gestion des identités et des droits d'accès" # à vérifier
     - "Sauvegarde et plan de reprise d'activité" # à vérifier
     - "Bonnes pratiques : mots de passe, hameçonnage, mises à jour" # à vérifier
-  realisations: [vpn]
 
 05-scripting-python:
   groupe: competence
@@ -79,7 +77,6 @@
     - "Scripts d'automatisation de tâches d'administration" # à vérifier
     - "Appel d'API REST et traitement de réponses JSON" # à vérifier
     - "Gestion des erreurs et journalisation" # à vérifier
-  realisations: []
 
 06-developpement-web:
   groupe: competence
@@ -91,7 +88,6 @@
     - "Intégration responsive et accessibilité" # à vérifier
     - "Génération d'un site statique (Astro)" # à vérifier
     - "Versionnage avec Git et déploiement continu" # à vérifier
-  realisations: [portfolio]
 
 07-bases-de-donnees:
   groupe: competence
@@ -103,28 +99,23 @@
     - "Création et modification de tables" # à vérifier
     - "Sauvegarde et restauration d'une base" # à vérifier
     - "Gestion des droits d'accès aux données" # à vérifier
-  realisations: []
 
 01-francais:
   groupe: langue
   categorie: "Français"
-  niveau: 50
-  # cecrl: C2   # facultatif, de A1 à C2 — à remplir
+  niveau: "Natif"
 
-02-anglais:
-  groupe: langue
-  categorie: "Anglais"
-  niveau: 50
-  # cecrl: B2   # facultatif, de A1 à C2 — à remplir
-
-03-russe:
+02-russe:
   groupe: langue
   categorie: "Russe"
-  niveau: 50
-  # cecrl: B1   # facultatif, de A1 à C2 — à remplir
+  niveau: "Natif"
 
-04-ukrainien:
+03-ukrainien:
   groupe: langue
   categorie: "Ukrainien"
-  niveau: 50
-  # cecrl: B1   # facultatif, de A1 à C2 — à remplir
+  niveau: "Natif"
+
+04-anglais:
+  groupe: langue
+  categorie: "Anglais"
+  niveau: "C1–C2"

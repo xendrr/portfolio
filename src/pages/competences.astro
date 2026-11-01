@@ -11,12 +11,10 @@ const realisations = (await getCollection('realisations', ({ data }) => !data.dr
 const covered = new Set(realisations.flatMap((r) => r.data.competences));
 const uncovered = allCompetences.filter((c) => !covered.has(c));
 
-const titreParSlug = new Map(realisations.map((r) => [r.id, r.data.title]));
-
 // L'ordre d'affichage suit le numéro en tête de clé dans competences.yaml.
 const entrees = (await getCollection('competences')).sort((a, b) => a.id.localeCompare(b.id));
-const savoirFaire = entrees.filter((e) => e.data.groupe === 'competence');
-const langues = entrees.filter((e) => e.data.groupe === 'langue');
+const savoirFaire = entrees.flatMap((e) => (e.data.groupe === 'competence' ? [e.data] : []));
+const langues = entrees.flatMap((e) => (e.data.groupe === 'langue' ? [e.data] : []));
 ---
 
 <Layout
@@ -30,59 +28,37 @@ const langues = entrees.filter((e) => e.data.groupe === 'langue');
 
     <ul class="niveaux">
       {
-        savoirFaire.map((e) => {
-          const depliable = e.data.details.length > 0 || e.data.realisations.length > 0;
-
-          return (
-            <li>
-              {depliable ? (
-                <details class="niveau">
-                  <summary class="niveau__ligne">
-                    <span class="niveau__nom">{e.data.categorie}</span>
-                    <span class="niveau__jauge" aria-hidden="true">
-                      <span class="niveau__part" style={`--niveau: ${e.data.niveau}%`} />
-                    </span>
-                    <span class="niveau__valeur">{e.data.niveau}&nbsp;%</span>
-                  </summary>
-
-                  <div class="niveau__detail">
-                    {e.data.details.length > 0 && (
-                      <ul>
-                        {e.data.details.map((detail) => (
-                          <li>{detail}</li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {e.data.realisations.length > 0 && (
-                      <p class="niveau__preuves">
-                        Prouvé par :{' '}
-                        {e.data.realisations.map((slug, index) => (
-                          <>
-                            {index > 0 && ', '}
-                            {titreParSlug.has(slug) ? (
-                              <a href={`/realisations/${slug}`}>{titreParSlug.get(slug)}</a>
-                            ) : (
-                              slug
-                            )}
-                          </>
-                        ))}
-                      </p>
-                    )}
-                  </div>
-                </details>
-              ) : (
-                <div class="niveau__ligne niveau__ligne--fixe">
-                  <span class="niveau__nom">{e.data.categorie}</span>
+        savoirFaire.map((e) => (
+          <li>
+            {e.details.length > 0 ? (
+              <details class="niveau">
+                <summary class="niveau__ligne">
+                  <span class="niveau__nom">{e.categorie}</span>
                   <span class="niveau__jauge" aria-hidden="true">
-                    <span class="niveau__part" style={`--niveau: ${e.data.niveau}%`} />
+                    <span class="niveau__part" style={`--niveau: ${e.niveau}%`} />
                   </span>
-                  <span class="niveau__valeur">{e.data.niveau}&nbsp;%</span>
+                  <span class="niveau__valeur">{e.niveau}&nbsp;%</span>
+                </summary>
+
+                <div class="niveau__detail">
+                  <ul>
+                    {e.details.map((detail) => (
+                      <li>{detail}</li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-            </li>
-          );
-        })
+              </details>
+            ) : (
+              <div class="niveau__ligne niveau__ligne--fixe">
+                <span class="niveau__nom">{e.categorie}</span>
+                <span class="niveau__jauge" aria-hidden="true">
+                  <span class="niveau__part" style={`--niveau: ${e.niveau}%`} />
+                </span>
+                <span class="niveau__valeur">{e.niveau}&nbsp;%</span>
+              </div>
+            )}
+          </li>
+        ))
       }
     </ul>
   </section>
@@ -90,20 +66,12 @@ const langues = entrees.filter((e) => e.data.groupe === 'langue');
   <section>
     <h2>Langues</h2>
 
-    <ul class="niveaux">
+    <ul class="langues">
       {
         langues.map((e) => (
           <li>
-            <div class="niveau__ligne niveau__ligne--fixe">
-              <span class="niveau__nom">
-                {e.data.categorie}
-                {e.data.cecrl && <span class="niveau__cecrl">{e.data.cecrl}</span>}
-              </span>
-              <span class="niveau__jauge" aria-hidden="true">
-                <span class="niveau__part" style={`--niveau: ${e.data.niveau}%`} />
-              </span>
-              <span class="niveau__valeur">{e.data.niveau}&nbsp;%</span>
-            </div>
+            <span class="langues__nom">{e.categorie}</span>
+            <span class="langues__niveau">{e.niveau}</span>
           </li>
         ))
       }
