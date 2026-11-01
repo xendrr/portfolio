@@ -325,12 +325,70 @@ main {
   margin-top: var(--space-5);
 }
 
+.lab-schema-viewport {
+  position: relative;
+}
+
 .lab-schema {
+  display: block;
   width: 100%;
   height: auto;
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius);
   background-color: var(--color-surface);
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.lab-schema.is-grabbing {
+  cursor: grabbing;
+}
+
+.lab-schema-controls {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.lab-schema-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding-inline: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  color: var(--color-ink-secondary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.lab-schema-button--large {
+  padding-inline: var(--space-3);
+}
+
+.lab-schema-button:hover {
+  color: var(--color-ink);
+  border-color: var(--color-accent);
+}
+
+.lab-schema-aide {
+  margin-top: var(--space-2);
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.lab-schema-aide kbd {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
 }
 
 .lab-schema a {
@@ -346,8 +404,25 @@ main {
   fill: var(--color-ink-secondary);
 }
 
+/* Liaisons hyperviseur → VM : pointillés qui défilent lentement, façon flux
+   réseau. Le trait redevient continu si l'utilisateur limite les animations. */
 .lab-schema .schema-line {
   stroke: var(--color-border);
+  stroke-dasharray: 5 5;
+  animation: flux-reseau 2.4s linear infinite;
+}
+
+@keyframes flux-reseau {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-schema .schema-line {
+    stroke-dasharray: none;
+    animation: none;
+  }
 }
 
 .lab-schema .schema-node {

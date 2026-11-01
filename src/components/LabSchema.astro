@@ -7,45 +7,241 @@ const nodes = [
 ---
 
 <div class="lab-schema-wrap">
-  <svg
-    class="lab-schema"
-    viewBox="0 0 700 320"
-    xmlns="http://www.w3.org/2000/svg"
-    role="img"
-    aria-labelledby="lab-schema-title"
-  >
-    <title id="lab-schema-title">Schéma du lab : un hyperviseur héberge une VM Windows Server (Active Directory), une VM Ubuntu Server (Apache2) et un VPN en cours de mise en place.</title>
+  <div class="lab-schema-viewport">
+    <svg
+      class="lab-schema"
+      id="lab-schema"
+      viewBox="0 0 700 320"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-labelledby="lab-schema-title"
+      aria-describedby="lab-schema-aide"
+      tabindex="0"
+    >
+      <title id="lab-schema-title">Schéma du lab : un hyperviseur héberge une VM Windows Server (Active Directory), une VM Ubuntu Server (Apache2) et un VPN en cours de mise en place.</title>
 
-    <rect class="schema-node" x="40" y="130" width="140" height="80" rx="6" />
-    <text x="110" y="158" text-anchor="middle" font-size="15" font-weight="600">Hyperviseur</text>
-    <text class="schema-secondary-text" x="110" y="178" text-anchor="middle" font-size="12">Poste de lab</text>
-    <text class="schema-secondary-text" x="110" y="196" text-anchor="middle" font-size="12">Salle D201i</text>
+      <g id="lab-schema-scene">
+        <rect class="schema-node" x="40" y="130" width="140" height="80" rx="6" />
+        <text x="110" y="158" text-anchor="middle" font-size="15" font-weight="600">Hyperviseur</text>
+        <text class="schema-secondary-text" x="110" y="178" text-anchor="middle" font-size="12">Poste de lab</text>
+        <text class="schema-secondary-text" x="110" y="196" text-anchor="middle" font-size="12">Salle D201i</text>
 
-    {
-      nodes.map((node) => (
-        <line class="schema-line" x1="180" y1="170" x2="420" y2={node.y + 30} stroke-width="1" />
-      ))
-    }
+        {
+          nodes.map((node) => (
+            <line class="schema-line" x1="180" y1="170" x2="420" y2={node.y + 30} stroke-width="1" />
+          ))
+        }
 
-    {
-      nodes.map((node) => (
-        <a href={node.href}>
-          <rect
-            class={`schema-node${node.status === 'en-cours' ? ' schema-node--progress' : ''}`}
-            x="420"
-            y={node.y}
-            width="240"
-            height="60"
-            rx="6"
-          />
-          <text x="540" y={node.y + 25} text-anchor="middle" font-size="15" font-weight="600">
-            {node.label}
-          </text>
-          <text class="schema-secondary-text" x="540" y={node.y + 44} text-anchor="middle" font-size="12">
-            {node.sub}
-          </text>
-        </a>
-      ))
-    }
-  </svg>
+        {
+          nodes.map((node) => (
+            <a href={node.href}>
+              <rect
+                class={`schema-node${node.status === 'en-cours' ? ' schema-node--progress' : ''}`}
+                x="420"
+                y={node.y}
+                width="240"
+                height="60"
+                rx="6"
+              />
+              <text x="540" y={node.y + 25} text-anchor="middle" font-size="15" font-weight="600">
+                {node.label}
+              </text>
+              <text class="schema-secondary-text" x="540" y={node.y + 44} text-anchor="middle" font-size="12">
+                {node.sub}
+              </text>
+            </a>
+          ))
+        }
+      </g>
+    </svg>
+
+    <div class="lab-schema-controls">
+      <button type="button" class="lab-schema-button" data-lab-zoom="in" aria-label="Zoomer dans le schéma">
+        <span aria-hidden="true">+</span>
+      </button>
+      <button type="button" class="lab-schema-button" data-lab-zoom="out" aria-label="Dézoomer dans le schéma">
+        <span aria-hidden="true">−</span>
+      </button>
+      <button type="button" class="lab-schema-button lab-schema-button--large" data-lab-zoom="reset">
+        Recentrer
+      </button>
+    </div>
+  </div>
+
+  <p class="lab-schema-aide" id="lab-schema-aide">
+    Molette ou pincement pour zoomer, glisser pour déplacer. Au clavier : flèches pour déplacer,
+    <kbd>+</kbd> et <kbd>−</kbd> pour zoomer, <kbd>0</kbd> pour recentrer.
+  </p>
 </div>
+
+<script>
+  const VIEW_WIDTH = 700;
+  const VIEW_HEIGHT = 320;
+  const MIN_SCALE = 0.5;
+  const MAX_SCALE = 3;
+  const KEY_PAN_STEP = 28;
+  const DRAG_THRESHOLD = 4;
+
+  const svg = document.getElementById('lab-schema') as SVGSVGElement | null;
+  const scene = document.getElementById('lab-schema-scene');
+
+  if (svg && scene) {
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+    let dragged = false;
+
+    const pointers = new Map<number, { x: number; y: number }>();
+    let pinchDistance = 0;
+
+    const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+    function apply() {
+      // On garde toujours une partie du schéma dans le cadre.
+      tx = clamp(tx, -(VIEW_WIDTH * scale) + 120, VIEW_WIDTH - 120);
+      ty = clamp(ty, -(VIEW_HEIGHT * scale) + 120, VIEW_HEIGHT - 120);
+      scene!.setAttribute('transform', `translate(${tx} ${ty}) scale(${scale})`);
+      // À l'échelle 1 il n'y a rien à déplacer : on laisse le doigt faire
+      // défiler la page au lieu de capturer le geste.
+      svg!.style.touchAction = scale > 1 ? 'none' : 'pan-y';
+    }
+
+    /** Convertit un point écran en coordonnées du viewBox, avant transformation. */
+    function toUserSpace(clientX: number, clientY: number) {
+      const ctm = svg!.getScreenCTM();
+      if (!ctm) return { x: 0, y: 0 };
+      const point = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
+      return { x: point.x, y: point.y };
+    }
+
+    function zoomAt(nextScale: number, anchorX: number, anchorY: number) {
+      const clamped = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+      // Le point sous le curseur doit rester au même endroit.
+      tx += anchorX * (scale - clamped);
+      ty += anchorY * (scale - clamped);
+      scale = clamped;
+      apply();
+    }
+
+    const zoomCentered = (factor: number) => zoomAt(scale * factor, VIEW_WIDTH / 2, VIEW_HEIGHT / 2);
+
+    function reset() {
+      scale = 1;
+      tx = 0;
+      ty = 0;
+      apply();
+    }
+
+    svg.addEventListener(
+      'wheel',
+      (event) => {
+        event.preventDefault();
+        const anchor = toUserSpace(event.clientX, event.clientY);
+        zoomAt(scale * (event.deltaY < 0 ? 1.12 : 1 / 1.12), anchor.x, anchor.y);
+      },
+      { passive: false }
+    );
+
+    svg.addEventListener('pointerdown', (event) => {
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      dragged = false;
+      if (pointers.size === 1) svg.classList.add('is-grabbing');
+    });
+
+    svg.addEventListener('pointermove', (event) => {
+      const previous = pointers.get(event.pointerId);
+      if (!previous) return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (pointers.size >= 2) {
+        const [a, b] = Array.from(pointers.values());
+        const distance = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDistance > 0) {
+          const anchor = toUserSpace((a.x + b.x) / 2, (a.y + b.y) / 2);
+          zoomAt(scale * (distance / pinchDistance), anchor.x, anchor.y);
+        }
+        pinchDistance = distance;
+        dragged = true;
+        return;
+      }
+
+      // Un seul doigt : on ne déplace que si on est zoomé, sinon on laisse
+      // la page défiler normalement.
+      if (scale <= 1) return;
+
+      const rect = svg.getBoundingClientRect();
+      const ratio = VIEW_WIDTH / rect.width;
+      const dx = (event.clientX - previous.x) * ratio;
+      const dy = (event.clientY - previous.y) * ratio;
+      if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+        // Capture tardive : capturer dès le pointerdown détournerait le clic
+        // et empêcherait l'ouverture des fiches liées.
+        if (!dragged && svg.hasPointerCapture?.(event.pointerId) === false) {
+          svg.setPointerCapture(event.pointerId);
+        }
+        dragged = true;
+      }
+      tx += dx;
+      ty += dy;
+      apply();
+    });
+
+    function endPointer(event: PointerEvent) {
+      pointers.delete(event.pointerId);
+      if (pointers.size < 2) pinchDistance = 0;
+      if (pointers.size === 0) svg!.classList.remove('is-grabbing');
+    }
+
+    svg.addEventListener('pointerup', endPointer);
+    svg.addEventListener('pointercancel', endPointer);
+
+    // Un glissé ne doit pas ouvrir la fiche liée.
+    svg.addEventListener(
+      'click',
+      (event) => {
+        if (!dragged) return;
+        event.preventDefault();
+        event.stopPropagation();
+        dragged = false;
+      },
+      true
+    );
+
+    svg.addEventListener('keydown', (event) => {
+      const actions: Record<string, () => void> = {
+        ArrowUp: () => {
+          ty += KEY_PAN_STEP;
+        },
+        ArrowDown: () => {
+          ty -= KEY_PAN_STEP;
+        },
+        ArrowLeft: () => {
+          tx += KEY_PAN_STEP;
+        },
+        ArrowRight: () => {
+          tx -= KEY_PAN_STEP;
+        },
+        '+': () => zoomCentered(1.15),
+        '=': () => zoomCentered(1.15),
+        '-': () => zoomCentered(1 / 1.15),
+        '0': () => reset(),
+      };
+
+      const action = actions[event.key];
+      if (!action) return;
+      event.preventDefault();
+      action();
+      apply();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-lab-zoom]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const mode = button.dataset.labZoom;
+        if (mode === 'in') zoomCentered(1.2);
+        else if (mode === 'out') zoomCentered(1 / 1.2);
+        else reset();
+      });
+    });
+
+    apply();
+  }
+</script>
